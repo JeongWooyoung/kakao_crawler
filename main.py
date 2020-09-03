@@ -12,6 +12,7 @@ from datetime import datetime
 from dateutil.parser import parse
 import re
 
+
 def extract_chat(raw_text):
     line_text = raw_text.replace('\r', '').split('\n')
     date_reg = re.compile(r'^(\d{2,4})년 ?(\d{1,2})월 ?(\d{1,2})일 ?\w요일')
@@ -49,16 +50,24 @@ def extract_chat(raw_text):
 if __name__ == "__main__":
     app_path = "C:\\Program Files (x86)\\Kakao\\KakaoTalk\\KakaoTalk.exe"
     app = Application(backend="win32").connect(path=app_path)
-    kakao_chatroom_list = app.windows(title_re=".*리니지2[mM].*")
 
     chat_list = {}
-    for kakao_chat in kakao_chatroom_list:
-        room_name = kakao_chat.element_info.name
-        chat_list[room_name] = []
-        chat = [c for c in kakao_chat.Children() if c.element_info.class_name == 'EVA_VH_ListControl_Dblclk'][0]
-        chat.type_keys("^a^c")
-        sleep(0.1)
-        raw_text = clipboard.GetData()
-        chat_text = extract_chat(raw_text)
-        chat_list[room_name] = chat_text
-        print(chat_text)
+    titles_reg = {"lineage2m": [".*리니지2[mM].*"]}
+    for target in titles_reg.keys():
+        target_chat_list = {}
+        for title_reg in titles_reg[target]:
+            kakao_chatroom_list = app.windows(title_re=title_reg)
+            for kakao_chat in kakao_chatroom_list:
+                room_name = kakao_chat.element_info.name
+                if room_name in target_chat_list:
+                    continue
+                target_chat_list[room_name] = []
+                chat = [c for c in kakao_chat.Children() if c.element_info.class_name == 'EVA_VH_ListControl_Dblclk'][0]
+                chat.type_keys("^a^c")
+                sleep(0.1)
+                raw_text = clipboard.GetData()
+                chat_text = extract_chat(raw_text)
+                target_chat_list[room_name] = chat_text
+                print(chat_text)
+        chat_list[target] = target_chat_list
+    print(chat_list)
