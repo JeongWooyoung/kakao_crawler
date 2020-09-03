@@ -1,0 +1,8 @@
+certifi==2020.6.20
+comtypes==1.1.7
+elasticsearch==7.9.1
+pywin32==228
+pywinauto==0.6.8
+six==1.15.0
+urllib3==1.25.10
+w3lib==1.22.0
