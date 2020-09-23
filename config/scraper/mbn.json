@@ -1,0 +1,11 @@
+{
+  "economy": [
+    {
+      "hosts": [],
+      "scraper": {
+        "type": "req",
+        "config": "mbn_config.json"
+      }
+    }
+  ]
+}

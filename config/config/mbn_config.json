@@ -1,0 +1,156 @@
+{
+  "#queries": "게시물 목록을 crawling 하기 위해 사용될 url 의 queries",
+  "queries": {
+    "page": {
+      "key": "page",
+      "type": "query",
+      "parser": [{"select": "div.paging_2018 a"}]
+    }
+  },
+  "#page_tag": "해당 카테고리의 post 목록에서 parsing 할 페이지 정보",
+  "page_tag": [
+    {
+      "comment": "게시물의 url",
+      "key": "post_url",
+      "type": "href",
+      "value_type": "multiline",
+      "parser": [{ "select": "div.list_area dl > dt.tit > a" }]
+    },
+    {
+      "comment": "게시물의 게시 날짜",
+      "key": "post_date",
+      "type": "date",
+      "value_type": "multiline",
+      "parser": [
+        {
+          "select": "div.list_area dl > dd > span.date",
+          "format": "%Y-%m-%d %H:%M"
+        }
+      ]
+    }
+  ],
+  "#post_tag": "post 에서 parsing 할 정보",
+  "post_tag": [
+    {
+      "comment": "게시물 id",
+      "key": "document_id",
+      "type": "comb",
+      "value_type": "single",
+      "parser": [
+        {
+          "key": "site",
+          "type": "site"
+        },
+        {
+          "key": "doc_no",
+          "type": "path",
+          "value_type": "single",
+          "parser": [{ "ids": -1 }]
+        }
+      ],
+      "format": "{site}-{doc_no}"
+    },
+    {
+      "comment": "게시물 category 명",
+      "key": "category",
+      "type": "target"
+    },
+    {
+      "comment": "게시물 category id",
+      "key": "category_no",
+      "type": "category"
+    },
+    {
+      "comment": "제목",
+      "key": "title",
+      "type": "text",
+      "value_type": "single",
+      "parser": [
+        {
+          "select": "div.title_box > div.box01 > h1",
+          "strip": true
+        }
+      ]
+    },
+    {
+      "comment": "게시날짜",
+      "key": "date",
+      "type": "date",
+      "value_type": "single",
+      "role": "last",
+      "parser": [
+        {
+          "select": "div.title_box > div.box02 > div > span > span.time",
+          "format": "%Y-%m-%d %H:%M"
+        }
+      ]
+    },
+    {
+      "comment": "작성자",
+      "key": "author",
+      "type": "text",
+      "value_type": "single",
+      "role": "first",
+      "parser": [
+        {
+          "select": "div#container_in div.detail",
+          "search": "\\[(\\w+) 기자 \\w+@\\w+\\]"
+        },
+        {
+          "select": "div#container_in div.detail",
+          "search": "\\[(\\w+) 기자]"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "comment": "기사 사진",
+      "key": "images",
+      "type": "image",
+      "value_type": "multiline",
+      "parser": [
+        {
+          "image": { "select": "div#container_in div.detail table img", "attr": "src" },
+          "caption": { "select": "div#container_in div.detail table img", "attr": "alt" }
+        }
+      ]
+    },
+    {
+      "comment": "내용",
+      "key": "content",
+      "type": "content",
+      "value_type": "single",
+      "role": "merge",
+      "parser": [
+        {
+          "select": "div#container_in div.detail",
+          "without_tags": ["table", "script"]
+        }
+      ]
+    },
+    {
+      "comment": "내용 문단",
+      "key": "paragraph",
+      "type": "paragraph",
+      "value_type": "multiline",
+      "parser": [
+        {
+          "select": "div#container_in div.detail",
+          "without_tags": ["table", "script"]
+        }
+      ]
+    },
+    {
+      "comment": "내용부 html",
+      "key": "html_content",
+      "type": "html",
+      "value_type": "single",
+      "parser": [{ "select": "body > div.wrap" }]
+    },
+    {
+      "comment": "기사 url",
+      "key": "url",
+      "type": "url"
+    }
+  ]
+}
